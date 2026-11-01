@@ -1,0 +1,34 @@
+{
+  "slug": "ingenuity",
+  "name": "Ingenuity",
+  "kind": "Mars helicopter",
+  "place": "Jezero Crater, Mars",
+  "start": 2021,
+  "end": 2024,
+  "lastSignal": "January 18, 2024",
+  "cause": "damage",
+  "x": 38,
+  "y": 54,
+  "tagline": "It was only meant to make five short hops. On Mars, this little helicopter kept flying until flight itself became impossible.",
+  "image": "/images/ingenuity.svg",
+  "imageAlt": "Illustrated archive portrait of Ingenuity",
+  "credit": "Original editorial illustration created for the Left Behind archive.",
+  "beats": {
+    "goal": "Demonstrate powered, controlled flight in the thin atmosphere of Mars.",
+    "achieved": "Designed for only five test flights, it completed 72 flights, scouting terrain and proving that aerial exploration on another planet is possible.",
+    "ending": "During its final flight in January 2024, one or more rotor blades were damaged during landing. Although it could still communicate, it could no longer fly, bringing the mission to an end.",
+    "now": "It remains on the surface of Mars near Jezero Crater as the first aircraft to have flown on another planet.",
+    "learned": "Future Mars missions can use helicopters as scouts to explore difficult terrain and support surface rovers."
+  },
+  "sources": [
+    {
+      "label": "NASA Science: Ingenuity Mars Helicopter",
+      "url": "https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/"
+    }
+  ],
+  "status": "decommissioned",
+  "agency": "NASA",
+  "category": "Aircraft",
+  "launch": 2021,
+  "updated": "2026-10"
+}

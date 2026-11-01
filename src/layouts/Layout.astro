@@ -1,0 +1,76 @@
+---
+import "../styles/global.css";
+interface Props { title?: string; description?: string; }
+const { title = "Left Behind", description = "An illustrated archive of humanity's presence in space." } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isHome = path === "/";
+const isExplore = path === "/explore-the-darkness";
+const isAbout = path === "/about";
+const isAlbum = path === "/image-album";
+const pageLinks = [{href:"/",label:"Solar System",num:"01"},{href:"/explore-the-darkness",label:"Explore",num:"02"},{href:"/last-transmission",label:"Last Transmission",num:"03"},{href:"/spacecraft-behavior",label:"Spacecraft Behavior",num:"04"},{href:"/image-album",label:"Image Album",num:"05"},{href:"/animation",label:"Animation",num:"06"},{href:"/time-machine",label:"Time Machine",num:"07"},{href:"/about",label:"About",num:"08"}];
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <meta name="theme-color" content="#070b16" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <title>{title}</title>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/" aria-label="Left Behind home"><span class="brand-mark">✳</span><h2>Left Behind</h2></a>
+    <nav aria-label="Main navigation">
+      {pageLinks.map((item) => <a href={item.href} aria-current={path === item.href ? "page" : undefined}>{item.label}</a>)}
+    </nav>
+  </header>
+  <main class:list={{ "home-main": isHome, "explore-main": isExplore, "album-main": isAlbum, "story-main": path.startsWith("/story/") }}><slot /></main>
+  <nav class="site-pagination" aria-label="Explore all eight pages">
+    {pageLinks.map((item) => <a href={item.href} aria-label={`Page ${item.num}: ${item.label}`} aria-current={path === item.href ? "page" : undefined}><span>{item.num}</span><b>{item.label}</b></a>)}
+  </nav>
+  <div class="star-cursor" aria-hidden="true"></div>
+  <script is:inline>
+    (() => {
+      // Reuse the home/archive headline reveal on every heading in the remaining pages.
+      const headings = document.querySelectorAll('main:not(.home-main):not(.explore-main) h1, main:not(.home-main):not(.explore-main) h2, main:not(.home-main):not(.explore-main) h3');
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        headings.forEach((heading) => heading.classList.add('heading-visible'));
+      } else {
+        headings.forEach((heading) => heading.classList.add('heading-reveal'));
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('heading-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -24px 0px' });
+        headings.forEach((heading) => observer.observe(heading));
+      }
+    })();
+  </script>
+  <script is:inline>
+    (() => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.matchMedia('(pointer:fine)').matches) return;
+      let last = 0;
+      window.addEventListener('pointermove', (event) => {
+        const now = performance.now();
+        if (now - last < 24) return;
+        last = now;
+        const star = document.createElement('i');
+        star.className = 'cursor-star';
+        star.style.left = event.clientX + 'px';
+        star.style.top = event.clientY + 'px';
+        star.style.setProperty('--drift', (Math.random() * 24 - 12) + 'px');
+        document.body.appendChild(star);
+        window.setTimeout(() => star.remove(), 720);
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>

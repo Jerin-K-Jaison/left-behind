@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Animation Lab · Left Behind" description="Explore a small interactive spacecraft model and orbital motion study.">
+  <section class="feature-hero page-hero"><span class="eyebrow">06 · MOTION STUDY</span><h1>The mechanics<br/><em>of wonder.</em></h1><p>A quiet little observatory for motion: rotate a spacecraft, watch its solar arrays catch the light, and see how orbital paths are represented.</p></section>
+  <section class="animation-lab authentic-model-lab">
+    <div class="model-viewer-stage">
+      <model-viewer id="authenticModel" src="https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/model/international-space-station-%28iss%29-%28a%29/International%20Space%20Station%20%28ISS%29%20%28A%29.glb" alt="NASA 3D model of the International Space Station" camera-controls auto-rotate rotation-per-second="14deg" shadow-intensity="1" exposure="1.05" environment-image="neutral" interaction-prompt="auto" ar-status="not-presenting">
+        <div slot="poster" class="model-loading">Loading NASA spacecraft model…</div>
+      </model-viewer>
+    </div>
+    <div class="model-picker" role="group" aria-label="Choose an original NASA spacecraft model">
+      <button type="button" data-model="iss" aria-pressed="true">International Space Station</button>
+      <button type="button" data-model="pioneer" aria-pressed="false">Pioneer 10</button>
+      <button type="button" data-model="hubble" aria-pressed="false">Hubble Telescope</button>
+    </div>
+    <p class="model-caption" id="modelCaption">The International Space Station: a permanently crewed orbital laboratory assembled by partner nations. Drag to inspect its trusses, modules and solar arrays; scroll or pinch to zoom.</p>
+    <a class="model-source" id="modelSource" href="https://science.nasa.gov/3d-resources/international-space-station-iss-a/" target="_blank" rel="noopener noreferrer">Original 3D model · NASA / Ames Research Center ↗</a>
+    <div class="lab-controls">
+      <div><span class="section-kicker">NASA 3D RESOURCES · INTERACTIVE MODELS</span><h2>Turn the real machines.</h2><p>These are original 3D assets published through NASA’s 3D Resources collection—not CSS illustrations. Drag to rotate freely through 360°, use the wheel or pinch to zoom, and select another spacecraft above.</p></div>
+      <div class="lab-buttons"><button class="btn" id="autoRotateToggle" type="button">Pause auto-rotation</button><button class="btn alt" id="resetModel" type="button">Reset view</button></div>
+    </div>
+  </section>
+  <section class="motion-notes"><article><span>01 / ORIENTATION</span><h3>Attitude</h3><p>A spacecraft constantly manages its orientation so antennas, instruments and solar panels point where they need to.</p></article><article><span>02 / POWER</span><h3>Sunlight</h3><p>Solar arrays convert sunlight into electrical power. Far from the Sun, some probes rely on radioisotope power instead.</p></article><article><span>03 / DISTANCE</span><h3>Signal delay</h3><p>Radio messages travel at light speed, but across the Solar System that still means minutes or hours of waiting.</p></article></section>
+  <footer class="archive-footer"><a href="/spacecraft-behavior">← Spacecraft status</a><a href="/time-machine">Travel through mission history →</a></footer>
+</Layout>
+<script type="module">
+  import "https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js";
+  const viewer = document.querySelector('#authenticModel');
+  const caption = document.querySelector('#modelCaption');
+  const source = document.querySelector('#modelSource');
+  const toggle = document.querySelector('#autoRotateToggle');
+  const reset = document.querySelector('#resetModel');
+  const models = {
+    iss: { src: 'https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/model/international-space-station-%28iss%29-%28a%29/International%20Space%20Station%20%28ISS%29%20%28A%29.glb', alt: 'NASA 3D model of the International Space Station', caption: 'The International Space Station: a permanently crewed orbital laboratory assembled by partner nations. Explore its trusses, modules and solar arrays.', page: 'https://science.nasa.gov/3d-resources/international-space-station-iss-a/', credit: 'NASA / Ames Research Center' },
+    pioneer: { src: 'https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/model/pioneer-10/Pioneer%2010.glb', alt: 'NASA 3D model of Pioneer 10', caption: 'Pioneer 10 opened the outer Solar System to close-up exploration and continued outward on a trajectory into interstellar space.', page: 'https://science.nasa.gov/3d-resources/pioneer/', credit: 'NASA / JPL / Eyes on the Solar System' },
+    hubble: { src: 'https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/model/hubble-space-telescope-%28a%29/Hubble%20Space%20Telescope%20%28A%29.glb', alt: 'NASA 3D model of the Hubble Space Telescope', caption: 'Hubble has spent decades above Earth’s atmosphere, returning observations that reshaped our view of the universe.', page: 'https://science.nasa.gov/3d-resources/hubble-space-telescope-a/', credit: 'NASA / DigitalSpace Corporation' }
+  };
+  let rotating = true;
+  function setModel(key) {
+    const item = models[key]; if (!item || !viewer) return;
+    viewer.src = item.src; viewer.alt = item.alt; caption.textContent = item.caption;
+    source.href = item.page; source.textContent = `Original 3D model · ${item.credit} ↗`;
+    document.querySelectorAll('[data-model]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.model === key)));
+    viewer.cameraOrbit = '0deg 75deg 105%';
+  }
+  document.querySelectorAll('[data-model]').forEach(button => button.addEventListener('click', () => setModel(button.dataset.model)));
+  toggle?.addEventListener('click', () => { rotating = !rotating; viewer?.toggleAttribute('auto-rotate', rotating); toggle.textContent = rotating ? 'Pause auto-rotation' : 'Resume auto-rotation'; });
+  reset?.addEventListener('click', () => { if (viewer) { viewer.cameraOrbit = '0deg 75deg 105%'; viewer.fieldOfView = 'auto'; rotating = true; viewer.setAttribute('auto-rotate',''); toggle.textContent = 'Pause auto-rotation'; } });
+</script>

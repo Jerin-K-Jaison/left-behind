@@ -1,0 +1,38 @@
+{
+  "slug": "mir",
+  "name": "Mir Space Station",
+  "kind": "Modular space station",
+  "place": "Low Earth Orbit (deorbited)",
+  "start": 1986,
+  "end": 2001,
+  "lastSignal": "March 23, 2001 — controlled re-entry",
+  "cause": "planned",
+  "x": 31,
+  "y": 28,
+  "tagline": "For fifteen years, crews called this modular station home. Its final voyage was a carefully planned return through Earth’s atmosphere.",
+  "image": "/images/mir.svg",
+  "imageAlt": "Illustrated archive portrait of Mir Space Station",
+  "credit": "Original editorial illustration created for the Left Behind archive.",
+  "status": "reentered",
+  "agency": "USSR / Russia",
+  "category": "Space station",
+  "launch": 1986,
+  "beats": {
+    "goal": "Provide a long-duration orbital research laboratory assembled from modules launched over time.",
+    "achieved": "Mir hosted international crews, supported long-duration human spaceflight research and helped develop operational experience later used on the International Space Station.",
+    "ending": "After 15 years in orbit, Mir was deliberately guided into Earth’s atmosphere on March 23, 2001. Most of the station burned up, with surviving debris falling into a designated remote area of the South Pacific.",
+    "now": "Mir is no longer in orbit. Its controlled deorbit ended a major chapter in human spaceflight.",
+    "learned": "Long-duration station operations taught engineers and astronauts how to maintain complex systems, conduct research and live in space for extended periods."
+  },
+  "sources": [
+    {
+      "label": "ESA: Mir FAQs — controlled re-entry",
+      "url": "https://www.esa.int/About_Us/Corporate_news/Mir_FAQs_-_About_the_re-entry"
+    },
+    {
+      "label": "ESA: Honourable discharge for Mir space station",
+      "url": "https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Honourable_discharge_for_Mir_space_station"
+    }
+  ],
+  "updated": "2026-10"
+}
