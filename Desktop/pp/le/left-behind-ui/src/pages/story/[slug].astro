@@ -1,0 +1,165 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export function getStaticPaths() {
+  const files = import.meta.glob('../../data/*.json', { eager: true });
+  return Object.values(files).map((f: any) => ({
+    params: { slug: f.default.slug },
+    props: { m: f.default },
+  }));
+}
+
+const { m } = Astro.props;
+const labels: Record<string, string> = {
+  goal: 'The dream that started it',
+  achieved: 'What happened out there',
+  ending: 'The turning point',
+  now: 'Where the story leaves it',
+  learned: 'What it left us',
+};
+const causeNames: Record<string, string> = {
+  power: 'Lost power', damage: 'Damaged', planned: 'Planned ending',
+  distance: 'Too far to hear', orbit: 'Fell from orbit',
+};
+const narrationParts = [m.name + '.', m.tagline, ...Object.values(m.beats)];
+const storyOpeners: Record<string,string> = { goal: 'Every mission begins with a question. For this one, the question was simple:', achieved: 'Then the journey began to answer back. Along the way,', ending: 'But every mission reaches a turning point. In this case,', now: 'The journey may be over—or still unfolding. Today,', learned: 'And the story did not end with the spacecraft. It changed what came next:' };
+const statusNames: Record<string,string> = { operational:'Operational', silent:'Silent / inactive', lost:'Lost', abandoned:'Left on site', decommissioned:'Decommissioned', reentered:'Re-entered atmosphere', crashed:'Crashed' };
+---
+<Layout title={`${m.name} · Left Behind`} description={m.tagline}>
+  <div class="story-heading">
+    <p><a href="/explore-the-darkness">← Back to the field guide</a></p>
+    <h1>{m.name}</h1>
+    <p class="sub">{m.agency ?? 'Space agency'} · {m.kind} · {m.place} · {m.start}–{m.end}</p>
+    <p class="story-lede">{m.tagline}</p>
+  </div>
+  <div class="story-actions">
+    <button class="btn" id="speak">▶ Listen to its story</button><span class="narration-note" id="narrationNote" aria-live="polite">A narrated field recording</span>
+    <button class="btn alt" id="stop">Stop</button>
+    <button class="btn alt" id="card"
+      data-name={m.name} data-line={m.tagline} data-last={m.lastSignal} data-image={`/images/${m.slug}.svg`}>
+      Download postcard
+    </button>
+  </div>
+  <div class="story-facts"><span class="tag">{causeNames[m.cause] ?? m.cause}</span> <span class={`status-pill status-${m.status ?? 'silent'}`}>{statusNames[m.status ?? 'silent'] ?? 'Archived'}</span><span class="story-last">Last signal / status: <strong>{m.lastSignal}</strong></span></div>
+  <section class="mission-photo-section" data-nasa-query={`${m.name} ${m.kind}`}>
+    <h2>Seen through the mission’s own cameras</h2>
+    <p class="photo-note">Original mission imagery from NASA’s public image archive. Select a photograph to view its caption and source.</p>
+    <div class="mission-photo-grid" aria-live="polite"><p class="photo-loading">Receiving images from the archive…</p></div>
+  </section>
+
+  {Object.entries(m.beats).map(([k, v]) => (
+    <section class="beat">
+      <h2>{labels[k] ?? k}</h2>
+      <p><span class="story-transition">{storyOpeners[k] ?? 'The record shows:'}</span> {v}</p>
+    </section>
+  ))}
+
+  <p class="src"><strong>Sources:</strong>
+    {m.sources.map((s: any) => (
+      <> <a href={s.url} target="_blank" rel="noopener noreferrer">{s.label}</a></>
+    ))}
+  </p>
+</Layout>
+
+<script>
+  const photoSection = document.querySelector<HTMLElement>('.mission-photo-section');
+  if (photoSection) {
+    const grid = photoSection.querySelector<HTMLElement>('.mission-photo-grid')!;
+    const query = photoSection.dataset.nasaQuery ?? 'space mission spacecraft';
+    fetch(`https://images-api.nasa.gov/search?q=${encodeURIComponent(query)}&media_type=image&page_size=8`)
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(data => {
+        const items = (data.collection?.items ?? []).filter((item:any) => item.links?.some((l:any) => l.render === 'image')).slice(0,6);
+        if (!items.length) throw new Error('No mission images found');
+        grid.innerHTML = items.map((item:any) => {
+          const image = item.links.find((l:any) => l.render === 'image').href;
+          const meta = item.data?.[0] ?? {};
+          const title = (meta.title ?? 'Mission photograph').replace(/[<>]/g,'');
+          const desc = (meta.description ?? '').replace(/<[^>]*>/g,' ').replace(/[<>]/g,'').slice(0,420);
+          return `<figure class="mission-photo"><a href="${image}" target="_blank" rel="noopener"><img loading="lazy" src="${image}" alt="${title.replace(/"/g,'&quot;')}"></a><figcaption><strong>${title}</strong><span>${desc}</span><small>NASA Image and Video Library · <a href="${meta.nasa_id ? `https://images.nasa.gov/details/${meta.nasa_id}` : 'https://images.nasa.gov/'}" target="_blank" rel="noopener">Original record ↗</a></small></figcaption></figure>`;
+        }).join('');
+      }).catch(() => { grid.innerHTML = '<p>NASA imagery could not be reached right now. <a href="https://images.nasa.gov/" target="_blank" rel="noopener">Search the NASA Image Library ↗</a></p>'; });
+  }
+</script>
+
+<script>
+  const speakBtn = document.querySelector<HTMLButtonElement>('#speak')!;
+  const stopBtn = document.querySelector<HTMLButtonElement>('#stop')!;
+  const narrationNote = document.querySelector<HTMLElement>('#narrationNote')!;
+  const rawNarration = [
+    `${speakBtn.closest('.story-actions')?.parentElement?.querySelector('h1')?.textContent ?? 'This mission'}.`,
+    document.querySelector('.story-lede')?.textContent ?? '',
+    ...[...document.querySelectorAll<HTMLElement>('.beat p')].map(p => p.textContent ?? '')
+  ].filter(Boolean);
+  // Break prose into short, natural speech-sized passages instead of one flat read-through.
+  const narrationParts = rawNarration.flatMap(part => part.match(/[^.!?]+[.!?]+|[^.!?]+$/g) ?? [part])
+    .map(part => part.trim()).filter(Boolean);
+  let narrationRun = 0;
+  function preferredVoice() {
+    const voices = speechSynthesis.getVoices();
+    return voices.find(v => /en-US|en-GB|en-AU/i.test(v.lang) && /natural|premium|neural|enhanced/i.test(v.name))
+      ?? voices.find(v => /en-US|en-GB|en-AU/i.test(v.lang) && !/compact/i.test(v.name))
+      ?? voices.find(v => /en-US|en-GB|en-AU/i.test(v.lang)) ?? null;
+  }
+  function speakPart(index:number, run:number) {
+    if (run !== narrationRun || index >= narrationParts.length) {
+      if (run === narrationRun) narrationNote.textContent = 'The transmission has reached its final signal.';
+      return;
+    }
+    const text = narrationParts[index];
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voice = preferredVoice(); if (voice) utterance.voice = voice;
+    utterance.lang = voice?.lang ?? 'en-US';
+    // A measured documentary pace, with gentle pitch variation for a less mechanical cadence.
+    utterance.rate = 0.84;
+    utterance.pitch = index === 0 ? 0.91 : (/[!?]$/.test(text) ? 0.99 : 0.94);
+    utterance.volume = 1;
+    utterance.onstart = () => narrationNote.textContent = index < 2 ? 'A voice from the archive…' : 'Listen closely…';
+    const pause = /[.!?]$/.test(text) ? 620 : 260;
+    utterance.onend = () => window.setTimeout(() => speakPart(index + 1, run), pause);
+    utterance.onerror = () => narrationNote.textContent = 'Narration is unavailable in this browser.';
+    speechSynthesis.speak(utterance);
+  }
+  speakBtn.addEventListener('click', () => {
+    narrationRun++; speechSynthesis.cancel();
+    narrationNote.textContent = 'Tuning the signal…';
+    speakPart(0, narrationRun);
+  });
+  stopBtn.addEventListener('click', () => { narrationRun++; speechSynthesis.cancel(); narrationNote.textContent = 'Transmission paused.'; });
+  window.addEventListener('pagehide', () => speechSynthesis.cancel());
+
+  function wrap(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxW: number, lh: number) {
+    let line = '';
+    for (const word of text.split(' ')) {
+      const test = line + word + ' ';
+      if (ctx.measureText(test).width > maxW && line) {
+        ctx.fillText(line, x, y);
+        line = word + ' ';
+        y += lh;
+      } else {
+        line = test;
+      }
+    }
+    ctx.fillText(line, x, y);
+  }
+
+  document.querySelector<HTMLButtonElement>('#card')?.addEventListener('click', (e) => {
+    const { name = 'Mission', line = '', image = '' } = (e.currentTarget as HTMLButtonElement).dataset;
+    const c = document.createElement('canvas');
+    c.width = 1000; c.height = 600;
+    const g = c.getContext('2d');
+    if (!g) return;
+    g.fillStyle = '#070b16'; g.fillRect(0, 0, 1000, 600);
+    const grad = g.createLinearGradient(0,0,1000,600); grad.addColorStop(0,'rgba(40,83,125,.32)'); grad.addColorStop(1,'rgba(7,11,22,0)');
+    g.fillStyle = grad; g.fillRect(0,0,1000,600);
+    for (let i = 0; i < 70; i++) { g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(Math.random()*1000,Math.random()*600,2,2); }
+    const finish = () => {
+      g.fillStyle = '#edf3fb'; g.font = '600 58px Georgia'; wrap(g, name, 340, 245, 590, 68);
+      g.fillStyle = '#aebed4'; g.font = '25px sans-serif';
+      wrap(g, `A downloadable mission postcard — a keepsake from the story of ${name}.`, 340, 345, 570, 38);
+      g.fillStyle = '#e8b76d'; g.font = '700 25px sans-serif'; g.fillText('LEFT BEHIND', 340, 510);
+      const a = document.createElement('a'); a.download = name.replace(/\s+/g,'-').toLowerCase() + '-postcard.png'; a.href = c.toDataURL('image/png'); a.click();
+    };
+    if (image) { const thumb = new Image(); thumb.onload = () => { g.save(); g.beginPath(); g.roundRect(65,135,220,300,18); g.clip(); g.drawImage(thumb,65,135,220,300); g.restore(); finish(); }; thumb.onerror = finish; thumb.src = image; } else finish();
+  });
+</script>

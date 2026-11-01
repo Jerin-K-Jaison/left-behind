@@ -1,0 +1,34 @@
+{
+  "slug": "pioneer10",
+  "name": "Pioneer 10",
+  "kind": "Deep-space probe",
+  "place": "Interstellar space",
+  "start": 1972,
+  "end": 2003,
+  "lastSignal": "January 23, 2003",
+  "cause": "distance",
+  "x": 128,
+  "y": 49,
+  "tagline": "The first craft to Jupiter crossed a frontier, then carried a small engraved hello from Earth into the dark.",
+  "image": "/images/pioneer10.svg",
+  "imageAlt": "Illustrated archive portrait of Pioneer 10",
+  "credit": "Original editorial illustration created for the Left Behind archive.",
+  "beats": {
+    "goal": "Become the first spacecraft to travel through the asteroid belt and closely study Jupiter.",
+    "achieved": "Pioneer 10 returned the first close-up images of Jupiter, measured its magnetic field and radiation belts, and became the first human-made object to travel beyond the planets.",
+    "ending": "As it moved farther from Earth, its radio signal became weaker. NASA received its final successful transmission on January 23, 2003, after which the spacecraft could no longer communicate across the enormous distance.",
+    "now": "Pioneer 10 continues its silent journey through interstellar space, carrying the famous Pioneer plaque as a message from humanity.",
+    "learned": "The mission proved that spacecraft could safely travel through the asteroid belt and opened the way for future exploration of the outer Solar System."
+  },
+  "sources": [
+    {
+      "label": "NASA Science: Pioneer 10",
+      "url": "https://science.nasa.gov/mission/pioneer-10/"
+    }
+  ],
+  "status": "silent",
+  "agency": "NASA",
+  "category": "Deep-space probe",
+  "launch": 1972,
+  "updated": "2026-10"
+}

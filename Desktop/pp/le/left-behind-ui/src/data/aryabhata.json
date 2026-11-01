@@ -1,0 +1,38 @@
+{
+  "slug": "aryabhata",
+  "name": "Aryabhata",
+  "kind": "Experimental satellite",
+  "place": "Earth orbit (re-entered)",
+  "start": 1975,
+  "end": 1992,
+  "lastSignal": "February 10, 1992 — atmospheric re-entry",
+  "cause": "orbit",
+  "x": 27,
+  "y": 19,
+  "tagline": "India’s first satellite opened a new chapter, circling Earth long after its first experiments were meant to end.",
+  "image": "/images/aryabhata.svg",
+  "imageAlt": "Illustrated archive portrait of Aryabhata",
+  "credit": "Original editorial illustration created for the Left Behind archive.",
+  "status": "reentered",
+  "agency": "ISRO",
+  "category": "Satellite",
+  "launch": 1975,
+  "beats": {
+    "goal": "Build and operate India’s first satellite while developing national capability in spacecraft design, fabrication, tracking and control.",
+    "achieved": "Launched on April 19, 1975, Aryabhata carried experiments in X-ray astronomy, aeronomy and solar physics. Its mainframe operated beyond its nominal six-month design life.",
+    "ending": "The satellite’s signals ceased after its final tracked orbit, and it re-entered Earth’s atmosphere on February 10, 1992.",
+    "now": "Aryabhata no longer exists as an orbiting object; it burned up during atmospheric re-entry. Its legacy remains central to India’s space programme.",
+    "learned": "The mission built essential experience in spacecraft engineering, telemetry, tracking, command operations and scientific payloads."
+  },
+  "sources": [
+    {
+      "label": "ISRO: Aryabhata",
+      "url": "https://www.isro.gov.in/aryabhata_1.html"
+    },
+    {
+      "label": "ISRO: Aryabhata re-entry history",
+      "url": "https://www.isro.gov.in/media_isro/pdf/ResourcesPdf/SpaceIndia/publication%2846%29.pdf"
+    }
+  ],
+  "updated": "2026-10"
+}
